@@ -1,3 +1,4 @@
+// Makes product
 class Product {
 	constructor(title, imageUrl, price, description) {
 		this.title = title;
@@ -7,12 +8,24 @@ class Product {
 	}
 }
 
+// Adding product to cart array, and rendering price.
 class ShoppingCart {
 	items = [];
 
+	get totalAmount() {
+		const sum = this.items.reduce(
+			(prevValue, curItem) => prevValue + curItem.price,
+			0
+		);
+		return sum;
+	}
+
 	addProduct(product) {
 		this.items.push(product);
-		this.totalOutput = `<h2>Total: \$${1}</h2>`;
+		this.totalOutput.innerHTML = `<h2>Total: \$${this.totalAmount.toFixed(
+			2
+		)}</h2>`;
+		console.log(this.items);
 	}
 
 	render() {
@@ -27,14 +40,14 @@ class ShoppingCart {
 	}
 }
 
+//Returning rendered item, and adds item to cart
 class ProductItem {
 	constructor(product) {
 		this.product = product;
 	}
 
 	addToCart() {
-		console.log("Adding product to cart!");
-		console.log(this.product);
+		App.addProductToCart(this.product);
 	}
 
 	render() {
@@ -51,12 +64,14 @@ class ProductItem {
         </div>
         </div>
         `;
+		//Adding item to cart on click
 		const addCartButton = prodEl.querySelector("button");
 		addCartButton.addEventListener("click", this.addToCart.bind(this));
 		return prodEl;
 	}
 }
 
+// Array contains products, and rendering list of it
 class ProductList {
 	products = [
 		new Product(
@@ -87,11 +102,15 @@ class ProductList {
 	}
 }
 
+//Rendering all items on site
 class Shop {
+	cart;
+
 	render() {
 		const renderHook = document.getElementById("app");
-		const cart = new ShoppingCart();
-		const cartEl = cart.render();
+
+		this.cart = new ShoppingCart();
+		const cartEl = this.cart.render();
 		const productList = new ProductList();
 		const prodListEl = productList.render();
 
@@ -100,5 +119,20 @@ class Shop {
 	}
 }
 
-const shop = new Shop();
-shop.render();
+class App {
+	static cart;
+
+	static init() {
+		const shop = new Shop();
+		shop.render();
+		this.cart = shop.cart;
+	}
+
+	static addProductToCart(product) {
+		this.cart.addProduct(product);
+	}
+}
+
+App.init();
+
+//Making shop and rendering shop
